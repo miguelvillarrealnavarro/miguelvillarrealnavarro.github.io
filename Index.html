@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Subir archivo a SharePoint</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+</head>
+<body>
+    <div class="container my-4">
+        <h1 class="text-center">Subir archivo a SharePoint</h1>
+        
+        <form id="sharepoint-form" class="mb-4">
+            <div class="mb-3">
+                <label for="contratista" class="form-label">Selecciona una contratista:</label>
+                <select id="contratista" name="contratista" class="form-control" required>
+                    <option value="">Seleccione una opción</option>
+                    <option value="Unicilindros">Unicilindros</option>
+                    <option value="Otra contratista">Otra contratista</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="contratocontratista" class="form-label">Selecciona el contrato:</label>
+                <select id="contratocontratista" name="contratocontratista" class="form-control" required>
+                    <option value="">Seleccione una opción</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="fileInput" class="form-label">Subir archivo:</label>
+                <input type="file" id="fileInput" name="file" class="form-control" required>
+            </div>
+            <button type="button" id="submit-btn" class="btn btn-primary" onclick="EnviarArchivo();">Enviar</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#contratista').change(function() {
+                const contratista = $(this).val();
+                const contratocontratista = $('#contratocontratista');
+
+                contratocontratista.empty(); // Limpiar las opciones anteriores
+                contratocontratista.append('<option value="">Seleccione una opción</option>'); // Opción por defecto
+
+                if (contratista === 'Unicilindros') {
+                    contratocontratista.append('<option value="20512020">20512020</option>');
+                    contratocontratista.append('<option value="EC20262022B">EC20262022B</option>');
+                } else if (contratista === 'Otra contratista') {
+                    contratocontratista.append('<option value="Prueba2024">Prueba2024</option>');
+                }
+            });
+        });
+
+        function EnviarArchivo() {
+            const fileInput = $('#fileInput')[0].files[0];
+            const contratista = $('#contratista').val();
+            const contratocontratista = $('#contratocontratista').val();
+
+            if (!fileInput) {
+                alert('Por favor, selecciona un archivo.');
+                return;
+            }
+            if (!contratista || !contratocontratista) {
+                alert('Por favor, selecciona una contratista y un contrato.');
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const fileContent = e.target.result.split(',')[1]; // Obtener la parte base64 del resultado
+                
+                const data = {
+                    "file": fileContent,
+                    "filename": fileInput.name,
+                    "contratista": contratista,
+                    "contratocontratista": contratocontratista
+                };
+
+                const apiUrlRegistrar = 'https://prod-129.westeurope.logic.azure.com:443/workflows/913fd755de57488e94fe3ccd5d528904/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ZR5TFndJAsTovOB-SW730tb2XPmoWouT8iAEZ9wNAYo';
+
+                $.ajax({
+                    url: apiUrlRegistrar,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function() {
+                        alert('Archivo enviado correctamente.');
+                    },
+                    error: function(error) {
+                        console.error('Error al enviar el archivo:', error);
+                        alert('Error al enviar el archivo.');
+                    }
+                });
+            };
+
+            reader.readAsDataURL(fileInput); // Leer como Data URL para obtener la base64
+        }
+    </script>
+</body>
+</html>
