@@ -21,7 +21,7 @@
                 </select>
             </div>
             <div class="mb-3">
-                <label for="contratocontratista" class="form-label">Selecciona una subcategoría:</label>
+                <label for="contratocontratista" class="form-label">Selecciona el contrato:</label>
                 <select id="contratocontratista" name="contratocontratista" class="form-control" required>
                     <option value="">Seleccione una opción</option>
                 </select>
@@ -62,11 +62,11 @@
             const contratocontratista = $('#contratocontratista').val();
 
             if (!fileInput) {
-                console.error('Por favor, selecciona un archivo.');
+                alert('Por favor, selecciona un archivo.');
                 return;
             }
             if (!contratista || !contratocontratista) {
-                console.error('Por favor, selecciona una contratista y un contrato.');
+                alert('Por favor, selecciona una contratista y un contrato.');
                 return;
             }
 
@@ -104,3 +104,4 @@
     </script>
 </body>
 </html>
+
