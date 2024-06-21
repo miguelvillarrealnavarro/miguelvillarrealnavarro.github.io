@@ -61,14 +61,16 @@
             const contratista = $('#contratista').val();
             const contratocontratista = $('#contratocontratista').val();
 
+             if (!contratista || !contratocontratista) {
+                alert('Por favor, selecciona una contratista y un contrato.');
+                return;
+            }
+            
             if (!fileInput) {
                 alert('Por favor, selecciona un archivo.');
                 return;
             }
-            if (!contratista || !contratocontratista) {
-                alert('Por favor, selecciona una contratista y un contrato.');
-                return;
-            }
+           
 
             const reader = new FileReader();
 
